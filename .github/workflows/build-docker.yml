@@ -28,7 +28,7 @@ jobs:
           docker pull immortalwrt/imagebuilder:x86-64-openwrt-23.05
 
           # Run the container and execute the OpenWrt build process
-          docker run --rm -it \
+          docker run --rm \
           -v ${{ github.workspace }}/bin:/home/build/immortalwrt/bin \
           -v ${{ github.workspace }}/files:/home/build/immortalwrt/files \
           -v ${{ github.workspace }}/build.sh:/home/build/immortalwrt/build.sh \
