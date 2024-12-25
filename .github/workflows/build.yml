@@ -50,37 +50,43 @@ jobs:
 
       - name: 复制当前仓库的配置文件到 ImmortalWrt 仓库
         run: cp -f .config feeds.conf.default diy.sh ImmortalWrt/
-
-      - name: 运行 diy.sh
+        
+      - name: 运行 build.sh
         working-directory: ImmortalWrt
         run: |
-          chmod +x diy.sh
-          ./diy.sh
+          chmod +x build.sh
+          ./build.sh
+      
+      # - name: 运行 diy.sh
+      #   working-directory: ImmortalWrt
+      #   run: |
+      #     chmod +x diy.sh
+      #     ./diy.sh
 
-      - name: 更新并下载 feeds
-        working-directory: ImmortalWrt
-        run: ./scripts/feeds update -a && ./scripts/feeds install -a
+      # - name: 更新并下载 feeds
+      #   working-directory: ImmortalWrt
+      #   run: ./scripts/feeds update -a && ./scripts/feeds install -a
 
-      - name: 再次复制当前仓库的配置文件到 ImmortalWrt 仓库
-        run: cp -f .config feeds.conf.default diy.sh ImmortalWrt/
+      # - name: 再次复制当前仓库的配置文件到 ImmortalWrt 仓库
+      #   run: cp -f .config feeds.conf.default diy.sh ImmortalWrt/
 
-      - name: 编译前上传配置
-        uses: actions/upload-artifact@v4
-        with:
-          name: config-before-build
-          path: |
-            ImmortalWrt/feeds.conf.default
-            ImmortalWrt/.config
+      # - name: 编译前上传配置
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: config-before-build
+      #     path: |
+      #       ImmortalWrt/feeds.conf.default
+      #       ImmortalWrt/.config
 
-      - name: 多线程编译 ImmortalWrt
-        if: ${{inputs.multithreading == true}}
-        working-directory: ImmortalWrt
-        run: make -j$(nproc) V=s
+      # - name: 多线程编译 ImmortalWrt
+      #   if: ${{inputs.multithreading == true}}
+      #   working-directory: ImmortalWrt
+      #   run: make -j$(nproc) V=s
 
-      - name: 单线程编译 ImmortalWrt
-        if: ${{inputs.multithreading == false}}
-        working-directory: ImmortalWrt
-        run: make -j1 V=s
+      # - name: 单线程编译 ImmortalWrt
+      #   if: ${{inputs.multithreading == false}}
+      #   working-directory: ImmortalWrt
+      #   run: make -j1 V=s
 
       - name: 上传编译结果到 Artifact
         uses: actions/upload-artifact@v4
