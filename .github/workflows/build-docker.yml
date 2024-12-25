@@ -27,7 +27,8 @@ jobs:
           # Pull the immortalwrt container
           docker pull immortalwrt/imagebuilder:x86-64-openwrt-23.05
           chmod +x ./build.sh
-          mkdir -p ${{ github.workspace }}/bin/targets
+          mkdir -p ${{ github.workspace }}/bin/targets/x86
+          chmod -R 777 ${{ github.workspace }}/bin/targets
           # Run the container and execute the OpenWrt build process
           docker run --rm \
           -v ${{ github.workspace }}/bin:/home/build/immortalwrt/bin \
