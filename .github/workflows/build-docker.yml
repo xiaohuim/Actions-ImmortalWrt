@@ -25,7 +25,7 @@ jobs:
       - name: Build OpenWrt image
         run: |
           # Pull the immortalwrt container
-          docker pull immortalwrt/imagebuilder:x86-64-openwrt-23.05
+          docker pull immortalwrt/imagebuilder:x86-64-openwrt-23.05.04
 
           # Run the container and execute the OpenWrt build process
           docker run --rm \
