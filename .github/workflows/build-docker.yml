@@ -43,8 +43,9 @@ jobs:
         uses: ncipollo/release-action@main
         if: ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
         with:
-          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+          artifacts: bin/targets/x86/64/*
           allowUpdates: true
           removeArtifacts: false
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
