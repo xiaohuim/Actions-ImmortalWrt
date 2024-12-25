@@ -4,20 +4,20 @@ on:
   workflow_dispatch:
     inputs:
       owner:
-        description: 'ImmortalWrt 仓库的拥有者 (Owner of ImmortalWrt repo)'
+        description: 'ImmortalWrt 仓库的拥有者'
         type: string
         required: true
-        default: 'padavanonly'
+        default: 'immortalwrt'
       repo:
-        description: 'ImmortalWrt 仓库的名字 (Name of ImmortalWrt repo)'
+        description: 'ImmortalWrt 仓库的名字'
         type: string
         required: true
-        default: 'immortalwrtARM'
+        default: 'immortalwrt'
       branch:
-        description: 'ImmortalWrt 仓库的分支 (Branch of ImmortalWrt repo)'
+        description: 'ImmortalWrt 仓库的分支'
         type: string
         required: true
-        default: 'mt7986'
+        default: 'openwrt-24.10'
       multithreading:
         description: '开启多线程编译 (Enable multithreading build)'
         type: boolean
@@ -33,38 +33,38 @@ jobs:
     runs-on: ubuntu-latest
     name: 🚀 编译 (Build)
     steps:
-      - name: 下载编译所需的依赖 (Install the software packages required for compilation)
+      - name: 下载编译所需的依赖
         run: |
           sudo apt update
           sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
 
-      - name: 克隆当前仓库 (Clone current repo)
+      - name: 克隆当前仓库
         uses: actions/checkout@v4
 
-      - name: 克隆 ImmortalWrt 仓库 (Clone ImmortalWrt repo)
+      - name: 克隆 ImmortalWrt 仓库
         uses: actions/checkout@v4
         with:
           repository: '${{inputs.owner}}/${{inputs.repo}}'
           ref: ${{inputs.branch}}
           path: ImmortalWrt
 
-      - name: 复制当前仓库的配置文件到 ImmortalWrt 仓库  (Copy current repo config to ImmortalWrt repo)
+      - name: 复制当前仓库的配置文件到 ImmortalWrt 仓库
         run: cp -f .config feeds.conf.default diy.sh ImmortalWrt/
 
-      - name: 运行 diy.sh (Run diy.sh)
+      - name: 运行 diy.sh
         working-directory: ImmortalWrt
         run: |
           chmod +x diy.sh
           ./diy.sh
 
-      - name: 更新并下载 feeds (Update and download feeds)
+      - name: 更新并下载 feeds
         working-directory: ImmortalWrt
         run: ./scripts/feeds update -a && ./scripts/feeds install -a
 
-      - name: 再次复制当前仓库的配置文件到 ImmortalWrt 仓库 (Copy current repo config to ImmortalWrt repo again)
+      - name: 再次复制当前仓库的配置文件到 ImmortalWrt 仓库
         run: cp -f .config feeds.conf.default diy.sh ImmortalWrt/
 
-      - name: 编译前上传配置 (Upload config before build)
+      - name: 编译前上传配置
         uses: actions/upload-artifact@v4
         with:
           name: config-before-build
@@ -72,17 +72,17 @@ jobs:
             ImmortalWrt/feeds.conf.default
             ImmortalWrt/.config
 
-      - name: 多线程编译 ImmortalWrt (Build ImmortalWrt multithreading)
+      - name: 多线程编译 ImmortalWrt
         if: ${{inputs.multithreading == true}}
         working-directory: ImmortalWrt
         run: make -j$(nproc) V=s
 
-      - name: 单线程编译 ImmortalWrt (Build ImmortalWrt single thread)
+      - name: 单线程编译 ImmortalWrt
         if: ${{inputs.multithreading == false}}
         working-directory: ImmortalWrt
         run: make -j1 V=s
 
-      - name: 上传编译结果到 Artifact (Upload build result to Artifact)
+      - name: 上传编译结果到 Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ImmortalWrt-build-result
@@ -93,27 +93,27 @@ jobs:
     name: 🚀 编译 (Build) - SSH
     runs-on: ubuntu-latest
     steps:
-      - name: 下载编译所需的依赖 (Install the software packages required for compilation)
+      - name: 下载编译所需的依赖
         run: |
           sudo apt update
           sudo apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
 
-      - name: 克隆当前仓库 (Clone current repo)
+      - name: 克隆当前仓库
         uses: actions/checkout@v4
 
-      - name: 克隆 ImmortalWrt 仓库 (Clone ImmortalWrt repo)
+      - name: 克隆 ImmortalWrt 仓库
         uses: actions/checkout@v4
         with:
           repository: '${{inputs.owner}}/${{inputs.repo}}'
           ref: ${{inputs.branch}}
           path: ImmortalWrt
 
-      - name: 开启 SSH 服务 (Start SSH service)
+      - name: 开启 SSH 服务
         uses: lhotari/action-upterm@v1
         with:
           wait-timeout-minutes: 20
 
-      - name: 编译前上传配置 (Upload config before build)
+      - name: 编译前上传配置
         uses: actions/upload-artifact@v4
         with:
           name: config-before-build
@@ -121,17 +121,17 @@ jobs:
             ImmortalWrt/feeds.conf.default
             ImmortalWrt/.config
 
-      - name: 多线程编译 ImmortalWrt (Build ImmortalWrt multithreading)
+      - name: 多线程编译 ImmortalWrt
         if: ${{inputs.multithreading == true}}
         working-directory: ImmortalWrt
         run: make -j$(nproc) V=s
 
-      - name: 单线程编译 ImmortalWrt (Build ImmortalWrt single thread)
+      - name: 单线程编译 ImmortalWrt
         if: ${{inputs.multithreading == false}}
         working-directory: ImmortalWrt
         run: make -j1 V=s
 
-      - name: 上传编译结果到 Artifact (Upload build result to Artifact)
+      - name: 上传编译结果到 Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ImmortalWrt-build-result
