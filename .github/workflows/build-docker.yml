@@ -43,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: openwrt-image
-          path: ./bin/targets/*/*.img*  # Adjust this path based on your build output
+          path: ./bin/targets/x86/64/*  # Adjust this path based on your build output
