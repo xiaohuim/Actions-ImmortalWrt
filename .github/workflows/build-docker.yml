@@ -1,0 +1,41 @@
+name: Build OpenWrt Image
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to main branch (adjust as needed)
+  pull_request:
+    branches:
+      - main  # Trigger on pull request targeting the main branch (adjust as needed)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # You can change to any supported runner
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Step 3: Run OpenWrt build in immortalwrt container
+      - name: Build OpenWrt image
+        run: |
+          # Pull the immortalwrt container
+          docker pull immortalwrt/imagebuilder:x86-64-openwrt-23.05
+
+          # Run the container and execute the OpenWrt build process
+          docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace immortalwrt/imagebuilder:x86-64-openwrt-23.05 ./scripts/feeds update -a
+          docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace immortalwrt/imagebuilder:x86-64-openwrt-23.05 ./scripts/feeds install -a
+          # docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace immortalwrt/imagebuilder:x86-64-openwrt-23.05 make menuconfig  # Optional if you want to configure first
+          docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace immortalwrt/imagebuilder:x86-64-openwrt-23.05 ./build.sh
+
+      # Step 4: Upload the built OpenWrt image artifact (optional, if you want to save the image to GitHub artifacts)
+      - name: Upload OpenWrt image
+        uses: actions/upload-artifact@v3
+        with:
+          name: openwrt-image
+          path: ./bin/targets/*/*.img  # Adjust this path based on your build output
