@@ -49,7 +49,7 @@ jobs:
           path: ImmortalWrt
 
       - name: 复制当前仓库的配置文件到 ImmortalWrt 仓库
-        run: cp -f .config feeds.conf.default diy.sh ImmortalWrt/
+        run: cp -f .config feeds.conf.default diy.sh build.sh ImmortalWrt/
         
       - name: 运行 build.sh
         working-directory: ImmortalWrt
