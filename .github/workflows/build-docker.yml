@@ -25,7 +25,7 @@ jobs:
       - name: Build OpenWrt image
         run: |
           # Pull the immortalwrt container
-          docker pull immortalwrt/imagebuilder:x86-64-openwrt-23.05
+          docker pull immortalwrt/imagebuilder:x86-64-openwrt-23.05.4
           chmod +x ./build.sh
           mkdir -p ${{ github.workspace }}/bin/targets/x86
           chmod -R 777 ${{ github.workspace }}/bin/targets
@@ -35,7 +35,7 @@ jobs:
           -v ${{ github.workspace }}/files:/home/build/immortalwrt/files \
           -v ${{ github.workspace }}/.config:/home/build/immortalwrt/.config \
           -v ${{ github.workspace }}/build.sh:/home/build/immortalwrt/build.sh \
-          -w /home/build/immortalwrt immortalwrt/imagebuilder:x86-64-openwrt-23.05 ./build.sh
+          -w /home/build/immortalwrt immortalwrt/imagebuilder:x86-64-openwrt-23.05.4 ./build.sh
       # Step 4: Upload the built OpenWrt image artifact (optional, if you want to save the image to GitHub artifacts)
       - name: Upload OpenWrt image
         uses: actions/upload-artifact@v3
